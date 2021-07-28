@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+    <category label="Scrcpy">
+	   <setting type="ipaddress" id="ipaddress" label="IP address" default="192.168.0.107"/>
+	   <setting type="number" id="fps" label="Max FPS" default="30"/>
+	   <setting type="number" id="size" label="Max Size" default="720"/>
+	   <setting type="text" id="crop" label="Crop" default="1432:1420:200:250"/>
+	   <setting type="text" id="bitrate" label="Bitrate" default="2M"/>
+    </category>
+</settings>
+

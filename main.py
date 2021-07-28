@@ -22,19 +22,33 @@ def adb_connect_to_device(addr):
         xbmcgui.Dialog().ok("Error connecting to device", msg)
         return False
 
-addr = xbmcgui.Dialog().input('Enter IP address', type=xbmcgui.INPUT_IPADDRESS)
-if addr:
-    if adb_connect_to_device(addr):
-        while True:
-            # check if USB debugging was authorized
-            launchCommand = "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/.kodi/addons/script.scrcpy-launcher/bin/lib ~/.kodi/addons/script.scrcpy-launcher/bin/adb devices"
-            result = subprocess.check_output(launchCommand, shell=True)
-            if "unauthorized" in result:
-                xbmcgui.Dialog().ok("Unauthorized", "Please allow USB debugging connection in Android device")
-            else:
-                break
-        launchCommand = "systemd-run bash ~/.kodi/addons/script.scrcpy-launcher/bin/launch_scrcpy.sh"
-        os.system(launchCommand)
-    sys.exit()
-else:
-    sys.exit()
+
+addon = xbmcaddon.Addon(id='script.scrcpy-launcher')  
+while True:
+    opt = xbmcgui.Dialog().contextmenu(['Stream Device','Settings'])
+    if opt == 0:
+        addr = addon.getSetting('ipaddress')
+        if adb_connect_to_device(addr):
+            while True:
+                # check if USB debugging was authorized
+                launchCommand = "LD_LIBRARY_PATH=$LD_LIBRARY_PATH:~/.kodi/addons/script.scrcpy-launcher/bin/lib ~/.kodi/addons/script.scrcpy-launcher/bin/adb devices"
+                result = subprocess.check_output(launchCommand, shell=True)
+                if "unauthorized" in result:
+                    xbmcgui.Dialog().ok("Unauthorized", "Please allow USB debugging connection in Android device")
+                else:
+                    break
+                    
+            fps = addon.getSetting('fps')
+            size = addon.getSetting('size')
+            crop = addon.getSetting('crop')
+            bitrate = addon.getSetting('bitrate')
+            
+            launchCommand = "systemd-run bash ~/.kodi/addons/script.scrcpy-launcher/bin/launch_scrcpy.sh"
+            args = ' "{}" "{}" "{}" "{}"'.format(fps,size,crop,bitrate)
+            os.system(launchCommand + args)
+        
+        sys.exit()
+    elif opt == 1:
+        addon.openSettings()
+    else:
+        sys.exit()
